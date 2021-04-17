@@ -19,16 +19,23 @@ P2P
 2VC
 
 
---
-http://www.xicidaili.com/nn/
+--Charset is the hard-coded in the file
 
 
 --免费代理
+http://www.xiladaili.com/
 https://www.kuaidaili.com/free/inha/
 
 
 --body
 
 
---
-HttpHostConnectException:  failed: Connection refused: connect
+--错误信息
+1.
+You are not allowed to access the document.
+2.
+Maximum number of open connections reached.
+
+
+--CSDN - HttpClient使用代理IP
+https://vegetable-chicken.blog.csdn.net/article/details/103609176
