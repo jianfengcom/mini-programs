@@ -19,6 +19,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import us.codecraft.xsoup.XElements;
+import us.codecraft.xsoup.Xsoup;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -133,7 +135,7 @@ public class SpiderTest {
      */
     @Test
     public void testSel() throws Exception {
-        System.setProperty("webdriver.chrome.driver","D:\\codehub\\downloads\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "D:\\codehub\\downloads\\chromedriver.exe");
 
         // 首选项
         Map<String, Object> opts = new HashMap<String, Object>();       // options
@@ -167,19 +169,19 @@ public class SpiderTest {
             // 页面代码
             String html = driver.getPageSource();
             System.out.println(html);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             driver.close();
 
 //            testSel(); // 666
-        }finally {
+        } finally {
             driver.close();
         }
     }
 
     @Test
     public void testSelByUser() throws Exception {
-        System.setProperty("webdriver.chrome.driver","D:\\codehub\\downloads\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "D:\\codehub\\downloads\\chromedriver.exe");
 
         // 首选项
         Map<String, Object> opts = new HashMap<String, Object>();       // options
@@ -220,13 +222,22 @@ public class SpiderTest {
             // 页面代码
             String html = driver.getPageSource();
             System.out.println(html);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             driver.close();
 
 //            testSel(); // 666
-        }finally {
+        } finally {
             driver.close();
+        }
+    }
+
+    @Test
+    public void testXsoup() throws Exception {
+        String doc = ResourceUtil.ReadResourceAsString("1.xml");
+        XElements xElements = Xsoup.select(doc, "//div[@class='info']/div[1]/a/text()");
+        for (String bookName : xElements.list()) {
+            System.out.println(bookName);
         }
     }
 }

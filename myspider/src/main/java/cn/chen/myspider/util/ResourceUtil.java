@@ -43,4 +43,8 @@ public class ResourceUtil {
         return nameValuePairList;
     }
 
+    public static String ReadResourceAsString(String path) throws Exception {
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+        return ReadInputStreamAsString(in);
+    }
 }
