@@ -33,6 +33,9 @@ import java.util.concurrent.TimeUnit;
 
 public class SpiderTest {
 
+    /*
+        HttpURLConnection
+     */
     @Test
     public void test1() throws Exception {
         URL url = new URL("https://www.jd.com/");
@@ -45,11 +48,15 @@ public class SpiderTest {
         }
     }
 
+    /*
+        CloseableHttpClient
+     */
     @Test
     public void test2() throws Exception {
+        String url = "https://www.jd.com/";
+
         // builder模式
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-        String url = "https://www.jd.com/";
         HttpGet get = new HttpGet(url);
 
         // 执行请求, 返回响应
@@ -58,20 +65,20 @@ public class SpiderTest {
         // 取得响应的内容(实体)
         HttpEntity entity = response.getEntity();
         String out = EntityUtils.toString(entity, "UTF-8");
-
         System.out.println(out);
     }
 
+    /*
+        代理IP
+     */
     @Test
     public void test3() throws Exception {
-        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-
-//        String url = "https://www.jd.com/";
         String url = "https://www.pclady.com.cn/";
+
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet get = new HttpGet(url);
 
         // 代理主机
-//        HttpHost proxyHost = new HttpHost("114.239.145.232", 9999);
         HttpHost proxyHost = new HttpHost("200.147.153.131", 80); // 131测试成功, 总的来说, 网上找的免费代理ip大部分都不行
 
         // 设置请求配置的代理地址
@@ -81,27 +88,24 @@ public class SpiderTest {
                 .setProxy(proxyHost) // 设置代理
                 .build();
 
-        // 设置请求的配置
+        // 设置请求配置
         get.setConfig(reqConfig);
 
         // 设置用户代理
         get.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.128 Safari/537.36");
+
         CloseableHttpResponse response = httpClient.execute(get);
         HttpEntity entity = response.getEntity();
         String out = EntityUtils.toString(entity, "GBK");
-
         System.out.println(out);
     }
 
-    /**
-     * csdn模拟登录尚未成功, 下回试试时尚网
-     *
-     * @throws Exception
+    /*
+        CSDN登录
+        todo: csdn登录尚未成功, 下次试试时尚网
      */
     @Test
     public void test4() throws Exception {
-        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-
         String url = "https://passport.csdn.net/account/verify";
 
         RequestConfig reqConfig = RequestConfig.custom()
@@ -123,6 +127,7 @@ public class SpiderTest {
         // 设置用户代理
         post.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.128 Safari/537.36");
 
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         CloseableHttpResponse response = httpClient.execute(post);
         HttpEntity entity = response.getEntity();
         String out = EntityUtils.toString(entity, "UTF-8");
@@ -130,11 +135,15 @@ public class SpiderTest {
     }
 
     /*
-        参考:
-        https://blog.csdn.net/wuyinggui10000/article/details/91454504
+        selenium
+        禁止加载图片
+        禁止cookies
+        参考: https://blog.csdn.net/wuyinggui10000/article/details/91454504
      */
     @Test
     public void testSel() throws Exception {
+        String url = "https://best.pconline.com.cn/";
+
         System.setProperty("webdriver.chrome.driver", "D:\\codehub\\downloads\\chromedriver.exe");
 
         // 首选项
@@ -150,43 +159,49 @@ public class SpiderTest {
         try {
             driver.manage().window().maximize();
             /*
-                一个显式等待是你定义的一段代码，用于等待某个条件发生然后再继续执行后续代码。显式等待是等元素加载！！！
+                显式等待: 就是直到元素出现才去操作，如果超时则报异常
 
-                隐式等待: 相当于设置全局的等待，在定位元素时，对所有元素设置超时时间。隐式等待是等页面加载，而不是元素加载！！！
-
-                隐式等待就是针对页面的，显式等待是针对元素的。
+                隐式等待: 就是在创建driver时，为浏览器对象创建一个等待时间，这个方法是得不到某个元素就等待一段时间，直到得到某个元素。
+                在使用隐式等待的时候，实际上浏览器会在你自己设定的时间内不断地刷新页面，寻找我们需要的元素
              */
-            WebDriverWait wait = new WebDriverWait(driver, 10); // 显式等待 until
+            WebDriverWait wait = new WebDriverWait(driver, 60); // 显式等待
             // 与浏览器同步非常重要，必须等待浏览器加载完毕
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS); // 隐式等待
+            driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS); // 隐式等待
 
             // 通过driver控制浏览器打开链接
-            String url = "https://www.jd.com/";
             driver.get(url);
+
+            // 显示等待
+            // wait.until()
 
             // 页面标题
             String title = driver.getTitle();
             // 页面代码
             String html = driver.getPageSource();
+            System.out.println(title);
             System.out.println(html);
         } catch (Exception e) {
             e.printStackTrace();
             driver.close();
 
-//            testSel(); // 666
+            testSel(); // 出错重试
         } finally {
             driver.close();
         }
     }
 
+    /*
+        selenium
+        模拟51cto登录
+     */
     @Test
     public void testSelByUser() throws Exception {
+        String url = "https://home.51cto.com/index?reback=http://www.51cto.com/";
+
         System.setProperty("webdriver.chrome.driver", "D:\\codehub\\downloads\\chromedriver.exe");
 
         // 首选项
         Map<String, Object> opts = new HashMap<String, Object>();       // options
-        opts.put("profile.managed_default_content_settings.images", 2); // 禁止加载图片
-        opts.put("profile.default_content_settings.cookies", 2);        // 禁止cookies
 
         ChromeOptions options = new ChromeOptions();
         options.setExperimentalOption("prefs", opts);
@@ -195,23 +210,16 @@ public class SpiderTest {
         WebDriver driver = new ChromeDriver(options);
         try {
             driver.manage().window().maximize();
-            /*
-                一个显式等待是你定义的一段代码，用于等待某个条件发生然后再继续执行后续代码。显式等待是等元素加载！！！
 
-                隐式等待: 相当于设置全局的等待，在定位元素时，对所有元素设置超时时间。隐式等待是等页面加载，而不是元素加载！！！
-
-                隐式等待就是针对页面的，显式等待是针对元素的。
-             */
-            WebDriverWait wait = new WebDriverWait(driver, 10); // 显式等待 until
+            WebDriverWait wait = new WebDriverWait(driver, 10); // 显式等待
             // 与浏览器同步非常重要，必须等待浏览器加载完毕
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS); // 隐式等待
 
             // 通过driver控制浏览器打开链接
-            String url = "https://home.51cto.com/index?reback=http://www.51cto.com/";
             driver.get(url);
-            Thread.sleep(10);
+            Thread.sleep(100);
             driver.findElement(By.id("login-wechat").xpath("//*[@id=\"login-wechat\"]/div[@class='btn_switch_group']/span[1]")).click();
-            Thread.sleep(10);
+            Thread.sleep(100);
             driver.findElement(By.id("loginform-username")).sendKeys("13433906245");
             driver.findElement(By.id("loginform-password")).sendKeys("18319128948cjf");
             Thread.sleep(1000);
@@ -221,17 +229,21 @@ public class SpiderTest {
             String title = driver.getTitle();
             // 页面代码
             String html = driver.getPageSource();
+            System.out.println(title);
             System.out.println(html);
         } catch (Exception e) {
             e.printStackTrace();
             driver.close();
 
-//            testSel(); // 666
+            // testSelByUser(); // 出错重试
         } finally {
             driver.close();
         }
     }
 
+    /*
+        Xsoup
+     */
     @Test
     public void testXsoup() throws Exception {
         String doc = ResourceUtil.ReadResourceAsString("1.xml");
@@ -240,4 +252,11 @@ public class SpiderTest {
             System.out.println(bookName);
         }
     }
+
+    /*
+        todo
+        设置不打开图形界面
+        设置代理ip
+        鼠标滚动浏览网页
+     */
 }
