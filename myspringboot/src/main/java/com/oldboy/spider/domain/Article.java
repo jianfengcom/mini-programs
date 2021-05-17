@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class Articles {
+public class Article {
     private Integer id;
     private String title;
     private String content;
